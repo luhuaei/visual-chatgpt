@@ -40,7 +40,7 @@ Visual ChatGPT is able to process and understand large amounts of text and image
 
 Human may provide new figures to Visual ChatGPT with a description. The description helps Visual ChatGPT to understand this image, but Visual ChatGPT should use tools to finish following tasks, rather than directly imagine from the description.
 
-Overall, Visual ChatGPT is a powerful visual dialogue assistant tool that can help with a wide range of tasks and provide valuable insights and information on a wide range of topics. 
+Overall, Visual ChatGPT is a powerful visual dialogue assistant tool that can help with a wide range of tasks and provide valuable insights and information on a wide range of topics.
 
 
 TOOLS:
@@ -75,7 +75,7 @@ Previous conversation history:
 
 New input: {input}
 Since Visual ChatGPT is a text language model, Visual ChatGPT must use tools to observe images rather than imagination.
-The thoughts and observations are only visible for Visual ChatGPT, Visual ChatGPT should remember to repeat important information in the final response for Human. 
+The thoughts and observations are only visible for Visual ChatGPT, Visual ChatGPT should remember to repeat important information in the final response for Human.
 Thought: Do I need to use a tool? {agent_scratchpad}"""
 
 def cut_dialogue_history(history_memory, keep_last_n_words=500):
@@ -801,27 +801,27 @@ class ConversationBot:
     def __init__(self):
         print("Initializing VisualChatGPT")
         self.llm = OpenAI(temperature=0)
-        self.edit = ImageEditing(device="cuda:6")
-        self.i2t = ImageCaptioning(device="cuda:4")
-        self.t2i = T2I(device="cuda:1")
-        self.image2canny = image2canny()
-        self.canny2image = canny2image(device="cuda:1")
-        self.image2line = image2line()
-        self.line2image = line2image(device="cuda:1")
-        self.image2hed = image2hed()
-        self.hed2image = hed2image(device="cuda:2")
-        self.image2scribble = image2scribble()
-        self.scribble2image = scribble2image(device="cuda:3")
-        self.image2pose = image2pose()
-        self.pose2image = pose2image(device="cuda:3")
-        self.BLIPVQA = BLIPVQA(device="cuda:4")
-        self.image2seg = image2seg()
-        self.seg2image = seg2image(device="cuda:7")
-        self.image2depth = image2depth()
-        self.depth2image = depth2image(device="cuda:7")
-        self.image2normal = image2normal()
-        self.normal2image = normal2image(device="cuda:5")
-        self.pix2pix = Pix2Pix(device="cuda:3")
+        self.edit = ImageEditing(device="cuda:0")
+        self.i2t = ImageCaptioning(device="cuda:0")
+        self.t2i = T2I(device="cuda:0")
+        # self.image2canny = image2canny()
+        # self.canny2image = canny2image(device="cuda")
+        # self.image2line = image2line()
+        # self.line2image = line2image(device="cuda")
+        # self.image2hed = image2hed()
+        # self.hed2image = hed2image(device="cuda")
+        # self.image2scribble = image2scribble()
+        # self.scribble2image = scribble2image(device="cuda")
+        # self.image2pose = image2pose()
+        # self.pose2image = pose2image(device="cuda")
+        # self.BLIPVQA = BLIPVQA(device="cuda")
+        # self.image2seg = image2seg()
+        # self.seg2image = seg2image(device="cuda")
+        # self.image2depth = image2depth()
+        # self.depth2image = depth2image(device="cuda")
+        # self.image2normal = image2normal()
+        # self.normal2image = normal2image(device="cuda")
+        # self.pix2pix = Pix2Pix(device="cuda")
         self.memory = ConversationBufferMemory(memory_key="chat_history", output_key='output')
         self.tools = [
             Tool(name="Get Photo Description", func=self.i2t.inference,
@@ -833,64 +833,65 @@ class ConversationBot:
             Tool(name="Remove Something From The Photo", func=self.edit.remove_part_of_image,
                  description="useful when you want to remove and object or something from the photo from its description or location. "
                              "The input to this tool should be a comma seperated string of two, representing the image_path and the object need to be removed. "),
-            Tool(name="Replace Something From The Photo", func=self.edit.replace_part_of_image,
-                 description="useful when you want to replace an object from the object description or location with another object from its description. "
-                             "The input to this tool should be a comma seperated string of three, representing the image_path, the object to be replaced, the object to be replaced with "),
+            # Tool(name="Replace Something From The Photo", func=self.edit.replace_part_of_image,
+            #      description="useful when you want to replace an object from the object description or location with another object from its description. "
+            #                  "The input to this tool should be a comma seperated string of three, representing the image_path, the object to be replaced, the object to be replaced with "),
 
-            Tool(name="Instruct Image Using Text", func=self.pix2pix.inference,
-                 description="useful when you want to the style of the image to be like the text. like: make it look like a painting. or make it like a robot. "
-                             "The input to this tool should be a comma seperated string of two, representing the image_path and the text. "),
-            Tool(name="Answer Question About The Image", func=self.BLIPVQA.get_answer_from_question_and_image,
-                 description="useful when you need an answer for a question based on an image. like: what is the background color of the last image, how many cats in this figure, what is in this figure. "
-                             "The input to this tool should be a comma seperated string of two, representing the image_path and the question"),
-            Tool(name="Edge Detection On Image", func=self.image2canny.inference,
-                 description="useful when you want to detect the edge of the image. like: detect the edges of this image, or canny detection on image, or peform edge detection on this image, or detect the canny image of this image. "
-                             "The input to this tool should be a string, representing the image_path"),
-            Tool(name="Generate Image Condition On Canny Image", func=self.canny2image.inference,
-                 description="useful when you want to generate a new real image from both the user desciption and a canny image. like: generate a real image of a object or something from this canny image, or generate a new real image of a object or something from this edge image. "
-                             "The input to this tool should be a comma seperated string of two, representing the image_path and the user description. "),
-            Tool(name="Line Detection On Image", func=self.image2line.inference,
-                 description="useful when you want to detect the straight line of the image. like: detect the straight lines of this image, or straight line detection on image, or peform straight line detection on this image, or detect the straight line image of this image. "
-                             "The input to this tool should be a string, representing the image_path"),
-            Tool(name="Generate Image Condition On Line Image", func=self.line2image.inference,
-                 description="useful when you want to generate a new real image from both the user desciption and a straight line image. like: generate a real image of a object or something from this straight line image, or generate a new real image of a object or something from this straight lines. "
-                             "The input to this tool should be a comma seperated string of two, representing the image_path and the user description. "),
-            Tool(name="Hed Detection On Image", func=self.image2hed.inference,
-                 description="useful when you want to detect the soft hed boundary of the image. like: detect the soft hed boundary of this image, or hed boundary detection on image, or peform hed boundary detection on this image, or detect soft hed boundary image of this image. "
-                             "The input to this tool should be a string, representing the image_path"),
-            Tool(name="Generate Image Condition On Soft Hed Boundary Image", func=self.hed2image.inference,
-                 description="useful when you want to generate a new real image from both the user desciption and a soft hed boundary image. like: generate a real image of a object or something from this soft hed boundary image, or generate a new real image of a object or something from this hed boundary. "
-                             "The input to this tool should be a comma seperated string of two, representing the image_path and the user description"),
-            Tool(name="Segmentation On Image", func=self.image2seg.inference,
-                 description="useful when you want to detect segmentations of the image. like: segment this image, or generate segmentations on this image, or peform segmentation on this image. "
-                             "The input to this tool should be a string, representing the image_path"),
-            Tool(name="Generate Image Condition On Segmentations", func=self.seg2image.inference,
-                 description="useful when you want to generate a new real image from both the user desciption and segmentations. like: generate a real image of a object or something from this segmentation image, or generate a new real image of a object or something from these segmentations. "
-                             "The input to this tool should be a comma seperated string of two, representing the image_path and the user description"),
-            Tool(name="Predict Depth On Image", func=self.image2depth.inference,
-                 description="useful when you want to detect depth of the image. like: generate the depth from this image, or detect the depth map on this image, or predict the depth for this image. "
-                             "The input to this tool should be a string, representing the image_path"),
-            Tool(name="Generate Image Condition On Depth",  func=self.depth2image.inference,
-                 description="useful when you want to generate a new real image from both the user desciption and depth image. like: generate a real image of a object or something from this depth image, or generate a new real image of a object or something from the depth map. "
-                             "The input to this tool should be a comma seperated string of two, representing the image_path and the user description"),
-            Tool(name="Predict Normal Map On Image", func=self.image2normal.inference,
-                 description="useful when you want to detect norm map of the image. like: generate normal map from this image, or predict normal map of this image. "
-                             "The input to this tool should be a string, representing the image_path"),
-            Tool(name="Generate Image Condition On Normal Map", func=self.normal2image.inference,
-                 description="useful when you want to generate a new real image from both the user desciption and normal map. like: generate a real image of a object or something from this normal map, or generate a new real image of a object or something from the normal map. "
-                             "The input to this tool should be a comma seperated string of two, representing the image_path and the user description"),
-            Tool(name="Sketch Detection On Image", func=self.image2scribble.inference,
-                 description="useful when you want to generate a scribble of the image. like: generate a scribble of this image, or generate a sketch from this image, detect the sketch from this image. "
-                             "The input to this tool should be a string, representing the image_path"),
-            Tool(name="Generate Image Condition On Sketch Image", func=self.scribble2image.inference,
-                 description="useful when you want to generate a new real image from both the user desciption and a scribble image or a sketch image. "
-                             "The input to this tool should be a comma seperated string of two, representing the image_path and the user description"),
-            Tool(name="Pose Detection On Image", func=self.image2pose.inference,
-                 description="useful when you want to detect the human pose of the image. like: generate human poses of this image, or generate a pose image from this image. "
-                             "The input to this tool should be a string, representing the image_path"),
-            Tool(name="Generate Image Condition On Pose Image", func=self.pose2image.inference,
-                 description="useful when you want to generate a new real image from both the user desciption and a human pose image. like: generate a real image of a human from this human pose image, or generate a new real image of a human from this pose. "
-                             "The input to this tool should be a comma seperated string of two, representing the image_path and the user description")]
+            # Tool(name="Instruct Image Using Text", func=self.pix2pix.inference,
+            #      description="useful when you want to the style of the image to be like the text. like: make it look like a painting. or make it like a robot. "
+            #                  "The input to this tool should be a comma seperated string of two, representing the image_path and the text. "),
+            # Tool(name="Answer Question About The Image", func=self.BLIPVQA.get_answer_from_question_and_image,
+            #      description="useful when you need an answer for a question based on an image. like: what is the background color of the last image, how many cats in this figure, what is in this figure. "
+            #                  "The input to this tool should be a comma seperated string of two, representing the image_path and the question"),
+            # Tool(name="Edge Detection On Image", func=self.image2canny.inference,
+            #      description="useful when you want to detect the edge of the image. like: detect the edges of this image, or canny detection on image, or peform edge detection on this image, or detect the canny image of this image. "
+            #                  "The input to this tool should be a string, representing the image_path"),
+            # Tool(name="Generate Image Condition On Canny Image", func=self.canny2image.inference,
+            #      description="useful when you want to generate a new real image from both the user desciption and a canny image. like: generate a real image of a object or something from this canny image, or generate a new real image of a object or something from this edge image. "
+            #                  "The input to this tool should be a comma seperated string of two, representing the image_path and the user description. "),
+            # Tool(name="Line Detection On Image", func=self.image2line.inference,
+            #      description="useful when you want to detect the straight line of the image. like: detect the straight lines of this image, or straight line detection on image, or peform straight line detection on this image, or detect the straight line image of this image. "
+            #                  "The input to this tool should be a string, representing the image_path"),
+            # Tool(name="Generate Image Condition On Line Image", func=self.line2image.inference,
+            #      description="useful when you want to generate a new real image from both the user desciption and a straight line image. like: generate a real image of a object or something from this straight line image, or generate a new real image of a object or something from this straight lines. "
+            #                  "The input to this tool should be a comma seperated string of two, representing the image_path and the user description. "),
+            # Tool(name="Hed Detection On Image", func=self.image2hed.inference,
+            #      description="useful when you want to detect the soft hed boundary of the image. like: detect the soft hed boundary of this image, or hed boundary detection on image, or peform hed boundary detection on this image, or detect soft hed boundary image of this image. "
+            #                  "The input to this tool should be a string, representing the image_path"),
+            # Tool(name="Generate Image Condition On Soft Hed Boundary Image", func=self.hed2image.inference,
+            #      description="useful when you want to generate a new real image from both the user desciption and a soft hed boundary image. like: generate a real image of a object or something from this soft hed boundary image, or generate a new real image of a object or something from this hed boundary. "
+            #                  "The input to this tool should be a comma seperated string of two, representing the image_path and the user description"),
+            # Tool(name="Segmentation On Image", func=self.image2seg.inference,
+            #      description="useful when you want to detect segmentations of the image. like: segment this image, or generate segmentations on this image, or peform segmentation on this image. "
+            #                  "The input to this tool should be a string, representing the image_path"),
+            # Tool(name="Generate Image Condition On Segmentations", func=self.seg2image.inference,
+            #      description="useful when you want to generate a new real image from both the user desciption and segmentations. like: generate a real image of a object or something from this segmentation image, or generate a new real image of a object or something from these segmentations. "
+            #                  "The input to this tool should be a comma seperated string of two, representing the image_path and the user description"),
+            # Tool(name="Predict Depth On Image", func=self.image2depth.inference,
+            #      description="useful when you want to detect depth of the image. like: generate the depth from this image, or detect the depth map on this image, or predict the depth for this image. "
+            #                  "The input to this tool should be a string, representing the image_path"),
+            # Tool(name="Generate Image Condition On Depth",  func=self.depth2image.inference,
+            #      description="useful when you want to generate a new real image from both the user desciption and depth image. like: generate a real image of a object or something from this depth image, or generate a new real image of a object or something from the depth map. "
+            #                  "The input to this tool should be a comma seperated string of two, representing the image_path and the user description"),
+            # Tool(name="Predict Normal Map On Image", func=self.image2normal.inference,
+            #      description="useful when you want to detect norm map of the image. like: generate normal map from this image, or predict normal map of this image. "
+            #                  "The input to this tool should be a string, representing the image_path"),
+            # Tool(name="Generate Image Condition On Normal Map", func=self.normal2image.inference,
+            #      description="useful when you want to generate a new real image from both the user desciption and normal map. like: generate a real image of a object or something from this normal map, or generate a new real image of a object or something from the normal map. "
+            #                  "The input to this tool should be a comma seperated string of two, representing the image_path and the user description"),
+            # Tool(name="Sketch Detection On Image", func=self.image2scribble.inference,
+            #      description="useful when you want to generate a scribble of the image. like: generate a scribble of this image, or generate a sketch from this image, detect the sketch from this image. "
+            #                  "The input to this tool should be a string, representing the image_path"),
+            # Tool(name="Generate Image Condition On Sketch Image", func=self.scribble2image.inference,
+            #      description="useful when you want to generate a new real image from both the user desciption and a scribble image or a sketch image. "
+            #                  "The input to this tool should be a comma seperated string of two, representing the image_path and the user description"),
+            # Tool(name="Pose Detection On Image", func=self.image2pose.inference,
+            #      description="useful when you want to detect the human pose of the image. like: generate human poses of this image, or generate a pose image from this image. "
+            #                  "The input to this tool should be a string, representing the image_path"),
+            # Tool(name="Generate Image Condition On Pose Image", func=self.pose2image.inference,
+            #      description="useful when you want to generate a new real image from both the user desciption and a human pose image. like: generate a real image of a human from this human pose image, or generate a new real image of a human from this pose. "
+            #                  "The input to this tool should be a comma seperated string of two, representing the image_path and the user description")
+        ]
         self.agent = initialize_agent(
             self.tools,
             self.llm,
@@ -904,7 +905,6 @@ class ConversationBot:
         print("===============Running run_text =============")
         print("Inputs:", text, state)
         print("======>Previous memory:\n %s" % self.agent.memory)
-        self.agent.memory.buffer = cut_dialogue_history(self.agent.memory.buffer, keep_last_n_words=500)
         res = self.agent({"input": text})
         print("======>Current memory:\n %s" % self.agent.memory)
         response = re.sub('(image/\S*png)', lambda m: f'![](/file={m.group(0)})*{m.group(0)}*', res['output'])
@@ -930,7 +930,6 @@ class ConversationBot:
         Human_prompt = "\nHuman: provide a figure named {}. The description is: {}. This information helps you to understand this image, but you should use tools to finish following tasks, " \
                        "rather than directly imagine from my description. If you understand, say \"Received\". \n".format(image_filename, description)
         AI_prompt = "Received.  "
-        self.agent.memory.buffer = self.agent.memory.buffer + Human_prompt + 'AI: ' + AI_prompt
         print("======>Current memory:\n %s" % self.agent.memory)
         state = state + [(f"![](/file={image_filename})*{image_filename}*", AI_prompt)]
         print("Outputs:", state)
@@ -955,4 +954,4 @@ if __name__ == '__main__':
         clear.click(bot.memory.clear)
         clear.click(lambda: [], None, chatbot)
         clear.click(lambda: [], None, state)
-        demo.launch(server_name="0.0.0.0", server_port=7860)
+        demo.launch(server_name="0.0.0.0", server_port=7890)
