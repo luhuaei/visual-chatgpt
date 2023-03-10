@@ -1,15 +1,15 @@
-# Visual ChatGPT 
+# Visual ChatGPT
 
 **Visual ChatGPT** connects ChatGPT and a series of Visual Foundation Models to enable **sending** and **receiving** images during chatting.
 
 See our paper: [<font size=5>Visual ChatGPT: Talking, Drawing and Editing with Visual Foundation Models</font>](https://arxiv.org/abs/2303.04671)
 
-## Demo 
+## Demo
 <img src="./assets/demo_short.gif" width="750">
 
-##  System Architecture 
+##  System Architecture
 
- 
+
 <p align="center"><img src="./assets/figure.jpg" alt="Logo"></p>
 
 
@@ -64,10 +64,17 @@ We appreciate the open source of the following projects:
 
 [Hugging Face](https://github.com/huggingface) &#8194;
 [LangChain](https://github.com/hwchase17/langchain) &#8194;
-[Stable Diffusion](https://github.com/CompVis/stable-diffusion) &#8194; 
-[ControlNet](https://github.com/lllyasviel/ControlNet) &#8194; 
-[InstructPix2Pix](https://github.com/timothybrooks/instruct-pix2pix) &#8194; 
+[Stable Diffusion](https://github.com/CompVis/stable-diffusion) &#8194;
+[ControlNet](https://github.com/lllyasviel/ControlNet) &#8194;
+[InstructPix2Pix](https://github.com/timothybrooks/instruct-pix2pix) &#8194;
 [CLIPSeg](https://github.com/timojl/clipseg) &#8194;
 [BLIP](https://github.com/salesforce/BLIP) &#8194;
 
 
+
+## colab
+对应的 colab notebook 看 https://gist.github.com/luhuaei/85595abec53ebd8080fb10381e464197
+
+visual-chatgpt 切换到 colab 分支.
+
+启动成功后，直接通过 ngrok 反代出来的地址访问即可。
